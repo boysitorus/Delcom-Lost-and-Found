@@ -4,7 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <application android:allowBackup="true"
+    <application
+        android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/ic_logo"
@@ -13,6 +14,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LostAndFound"
         tools:targetApi="31">
+        <activity
+            android:name=".presentation.lostandfound.LostFoundsDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.lostandfound.LostFoundsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.allreports.AllReportActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.lostandfound.LostFoundManageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.lostandfound.LostFoundDetailActivity"
+            android:exported="false" />
         <activity
             android:name=".presentation.profile.ProfileActivity"
             android:exported="false" />

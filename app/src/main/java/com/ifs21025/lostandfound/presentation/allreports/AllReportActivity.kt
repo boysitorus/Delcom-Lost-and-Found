@@ -1,10 +1,9 @@
-package com.ifs21025.lostandfound.presentation.main
+package com.ifs21025.lostandfound.presentation.allreports
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.SearchView
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -16,17 +15,18 @@ import com.ifs21025.lostandfound.adapter.LostFoundAdapter
 import com.ifs21025.lostandfound.data.remote.MyResult
 import com.ifs21025.lostandfound.data.remote.response.DelcomLostFoundsResponse
 import com.ifs21025.lostandfound.data.remote.response.LostFoundsItemResponse
-import com.ifs21025.lostandfound.databinding.ActivityMainBinding
-import com.ifs21025.lostandfound.helper.Utils.Companion.observeOnce
+import com.ifs21025.lostandfound.databinding.ActivityAllReportBinding
 import com.ifs21025.lostandfound.presentation.ViewModelFactory
-import com.ifs21025.lostandfound.presentation.allreports.AllReportActivity
 import com.ifs21025.lostandfound.presentation.login.LoginActivity
 import com.ifs21025.lostandfound.presentation.lostandfound.LostFoundDetailActivity
 import com.ifs21025.lostandfound.presentation.lostandfound.LostFoundManageActivity
+import com.ifs21025.lostandfound.presentation.lostandfound.LostFoundsDetailActivity
+import com.ifs21025.lostandfound.presentation.main.MainActivity
+import com.ifs21025.lostandfound.presentation.main.MainViewModel
 import com.ifs21025.lostandfound.presentation.profile.ProfileActivity
 
-class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+class AllReportActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityAllReportBinding
     private val viewModel by viewModels<MainViewModel> {
         ViewModelFactory.getInstance(this)
     }
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityAllReportBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setupView()
@@ -87,8 +87,8 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
 
-                R.id.mainMenuAllReport -> {
-                    openAllLostFoundActivity()
+                R.id.mainMenuMyReport -> {
+                    openMainActivity()
                     true
                 }
 
@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeGetLostFounds() {
-        viewModel.getLostFounds().observe(this) { result ->
+        viewModel.getAllLostFounds().observe(this) { result ->
             if (result != null) {
                 when (result) {
                     is MyResult.Loading -> {
@@ -151,64 +151,21 @@ class MainActivity : AppCompatActivity() {
             val adapter = LostFoundAdapter()
             adapter.submitOriginalList(lostFounds)
             binding.rvMainLostFounds.adapter = adapter
+            adapter.setIsAll()
             adapter.setOnItemClickCallback(object : LostFoundAdapter.OnItemClickCallback {
                 override fun onCheckedChangeListener(
                     lostFound: LostFoundsItemResponse,
                     isChecked: Boolean
                 ) {
-                    adapter.filter(binding.svMain.query.toString())
 
-                    viewModel.putLostFound(
-                        lostFound.id,
-                        lostFound.title,
-                        lostFound.description,
-                        lostFound.status,
-                        isChecked
-                    ).observeOnce {
-                        when (it) {
-                            is MyResult.Error -> {
-                                if (isChecked) {
-                                    Toast.makeText(
-                                        this@MainActivity,
-                                        "Gagal menyelesaikan lost & found: " + lostFound.title,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    Toast.makeText(
-                                        this@MainActivity,
-                                        "Gagal batal menyelesaikan lost & found: " + lostFound.title,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
-
-                            is MyResult.Success -> {
-                                if (isChecked) {
-                                    Toast.makeText(
-                                        this@MainActivity,
-                                        "Berhasil menyelesaikan lost & found: " + lostFound.title,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    Toast.makeText(
-                                        this@MainActivity,
-                                        "Berhasil batal menyelesaikan lost & found: " + lostFound.title,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
-
-                            else -> {}
-                        }
-                    }
                 }
 
                 override fun onClickDetailListener(lostFoundId: Int) {
                     val intent = Intent(
-                        this@MainActivity,
-                        LostFoundDetailActivity::class.java
+                        this@AllReportActivity,
+                        LostFoundsDetailActivity::class.java
                     )
-                    intent.putExtra(LostFoundDetailActivity.KEY_TODO_ID, lostFoundId)
+                    intent.putExtra(LostFoundsDetailActivity.KEY_TODO_ID, lostFoundId)
                     launcher.launch(intent)
                 }
             })
@@ -261,18 +218,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun openAddLostFoundActivity() {
         val intent = Intent(
-            this@MainActivity,
+            this@AllReportActivity,
             LostFoundManageActivity::class.java
         )
         intent.putExtra(LostFoundManageActivity.KEY_IS_ADD, true)
         launcher.launch(intent)
     }
 
-    private fun openAllLostFoundActivity(){
+    private fun openMainActivity(){
         val intent = Intent(
-            this@MainActivity,
-            AllReportActivity::class.java
+            this@AllReportActivity,
+            MainActivity::class.java
         )
         launcher.launch(intent)
     }
-} 
+}

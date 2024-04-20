@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.main.MainActivity">
+    tools:context=".presentation.allreports.AllReportActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbarLayoutMain"
@@ -21,7 +21,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="#0188A4"
             app:menu="@menu/main_menu"
-            app:title="@string/app_name"
+            app:title="@string/app_name_all_reports"
             app:titleTextColor="@color/white" />
 
     </com.google.android.material.appbar.AppBarLayout>

@@ -8,6 +8,7 @@ import com.ifs21025.lostandfound.data.repository.LostFoundRepository
 import com.ifs21025.lostandfound.data.repository.UserRepository
 import com.ifs21025.lostandfound.di.Injection
 import com.ifs21025.lostandfound.presentation.login.LoginViewModel
+import com.ifs21025.lostandfound.presentation.lostandfound.LostFoundViewModel
 import com.ifs21025.lostandfound.presentation.main.MainViewModel
 import com.ifs21025.lostandfound.presentation.profile.ProfileViewModel
 import com.ifs21025.lostandfound.presentation.register.RegisterViewModel
@@ -34,12 +35,17 @@ class ViewModelFactory(
 
             modelClass.isAssignableFrom(MainViewModel::class.java) -> {
                 MainViewModel
-                    .getInstance(authRepository) as T
+                    .getInstance(authRepository, lostFoundRepository) as T
             }
 
             modelClass.isAssignableFrom(ProfileViewModel::class.java) -> {
                 ProfileViewModel
                     .getInstance(authRepository, userRepository) as T
+            }
+
+            modelClass.isAssignableFrom(LostFoundViewModel::class.java) -> {
+                LostFoundViewModel
+                    .getInstance(lostFoundRepository) as T
             }
 
             else -> throw IllegalArgumentException(

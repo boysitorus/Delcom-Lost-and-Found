@@ -55,7 +55,7 @@ interface IApiService {
     suspend fun getTodos(
         @Query("is_completed") isFinished: Int?,
         @Query("is_me") isMe: Int?,
-        @Query("status") status: String
+        @Query("status") status: String?
     ): DelcomLostFoundsResponse
 
     @GET("lost-founds/{id}")

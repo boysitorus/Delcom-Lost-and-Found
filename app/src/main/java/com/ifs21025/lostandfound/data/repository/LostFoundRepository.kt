@@ -72,8 +72,8 @@ class LostFoundRepository private constructor(
 
     fun getLostFounds(
         isCompleted: Int?,
-        isMe: Int = 1,
-        status: String,
+        isMe: Int?,
+        status: String?,
     ) = flow {
         emit(MyResult.Loading)
         try {

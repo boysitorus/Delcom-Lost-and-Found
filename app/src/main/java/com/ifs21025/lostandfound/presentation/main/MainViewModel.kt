@@ -5,12 +5,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.ifs21025.lostandfound.data.pref.UserModel
+import com.ifs21025.lostandfound.data.remote.MyResult
+import com.ifs21025.lostandfound.data.remote.response.DelcomLostFoundsResponse
+import com.ifs21025.lostandfound.data.remote.response.DelcomResponse
 import com.ifs21025.lostandfound.data.repository.AuthRepository
+import com.ifs21025.lostandfound.data.repository.LostFoundRepository
 import com.ifs21025.lostandfound.presentation.ViewModelFactory
 import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val authRepository: AuthRepository,
+    private val lostFoundRepository: LostFoundRepository
 ) : ViewModel() {
 
     fun getSession(): LiveData<UserModel> {
@@ -23,15 +28,41 @@ class MainViewModel(
         }
     }
 
+    fun getLostFounds(): LiveData<MyResult<DelcomLostFoundsResponse>> {
+        return lostFoundRepository.getLostFounds(null, 1, null).asLiveData()
+    }
+
+    fun getAllLostFounds(): LiveData<MyResult<DelcomLostFoundsResponse>> {
+        return lostFoundRepository.getLostFounds(null, null, null).asLiveData()
+    }
+
+    fun putLostFound(
+        lostFoundId: Int,
+        title: String,
+        description: String,
+        status: String,
+        isCompleted: Boolean,
+    ): LiveData<MyResult<DelcomResponse>> {
+        return lostFoundRepository.putLostFound(
+            lostFoundId,
+            title,
+            description,
+            status,
+            isCompleted,
+        ).asLiveData()
+    }
+
     companion object {
         @Volatile
         private var INSTANCE: MainViewModel? = null
         fun getInstance(
-            authRepository: AuthRepository
+            authRepository: AuthRepository,
+            lostFoundRepository: LostFoundRepository
         ): MainViewModel {
             synchronized(ViewModelFactory::class.java) {
                 INSTANCE = MainViewModel(
-                    authRepository
+                    authRepository,
+                    lostFoundRepository
                 )
             }
             return INSTANCE as MainViewModel
