@@ -3,15 +3,18 @@ package com.ifs21025.lostandfound.presentation.lostandfound
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import com.ifs21025.lostandfound.data.local.entity.DelcomLostFoundEntity
 import com.ifs21025.lostandfound.data.remote.MyResult
 import com.ifs21025.lostandfound.data.remote.response.DataAddLostFoundResponse
 import com.ifs21025.lostandfound.data.remote.response.DelcomLostFoundResponse
 import com.ifs21025.lostandfound.data.remote.response.DelcomResponse
+import com.ifs21025.lostandfound.data.repository.LocalLostFoundRepository
 import com.ifs21025.lostandfound.data.repository.LostFoundRepository
 import com.ifs21025.lostandfound.presentation.ViewModelFactory
 
 class LostFoundViewModel(
-    private val lostFoundRepository: LostFoundRepository
+    private val lostFoundRepository: LostFoundRepository,
+    private val localLostFoundRepository: LocalLostFoundRepository
 ) : ViewModel() {
 
     fun getLostFound(lostFoundId: Int): LiveData<MyResult<DelcomLostFoundResponse>>{
@@ -50,15 +53,34 @@ class LostFoundViewModel(
         return lostFoundRepository.deleteLostFound(lostFoundId).asLiveData()
     }
 
+    fun getLocalLostFounds(): LiveData<List<DelcomLostFoundEntity>?> {
+        return localLostFoundRepository.getAllLostFounds()
+    }
+
+    fun getLocalLostFound(todoId: Int): LiveData<DelcomLostFoundEntity?> {
+        return localLostFoundRepository.get(todoId)
+    }
+
+
+    fun insertLocalLostFound(todo: DelcomLostFoundEntity) {
+        localLostFoundRepository.insert(todo)
+    }
+
+    fun deleteLocalLostFound(todo: DelcomLostFoundEntity) {
+        localLostFoundRepository.delete(todo)
+    }
+
     companion object {
         @Volatile
         private var INSTANCE: LostFoundViewModel? = null
         fun getInstance(
-            lostFoundRepository: LostFoundRepository
+            lostFoundRepository: LostFoundRepository,
+            localLostFoundRepository: LocalLostFoundRepository,
         ): LostFoundViewModel {
             synchronized(ViewModelFactory::class.java) {
                 INSTANCE = LostFoundViewModel(
-                    lostFoundRepository
+                    lostFoundRepository,
+                    localLostFoundRepository
                 )
             }
             return INSTANCE as LostFoundViewModel

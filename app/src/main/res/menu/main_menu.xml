@@ -7,11 +7,6 @@
             android:title="Profile"
             app:showAsAction="never" />
 
-        <item
-            android:id="@+id/mainMenuLogout"
-            android:title="Logout"
-            app:showAsAction="never" />
-
         <item android:id="@+id/mainMenuAllReport"
             android:title="All Report"
             app:showAsAction="never"/>
@@ -19,5 +14,14 @@
         <item android:id="@+id/mainMenuMyReport"
             android:title="My Report"
             app:showAsAction="never"/>
+
+        <item android:id="@+id/mainMenuMyFavorite"
+            android:title="Favorite"
+            app:showAsAction="never"/>
+
+        <item
+            android:id="@+id/mainMenuLogout"
+            android:title="Logout"
+            app:showAsAction="never" />
     </group>
 </menu>

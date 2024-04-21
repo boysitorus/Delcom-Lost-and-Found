@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Lost and Found</string>
     <string name="app_name_all_reports">Lost and Found - All Reports</string>
-    <string name="app_name_my_reports">Lost anf Found - My Reports</string>
+    <string name="app_name_my_reports">Lost and Found - My Reports</string>
+    <string name="app_name_my_favorite">Lost and Found - My Favorite</string>
     <string name="select">Select Item</string>
 </resources>

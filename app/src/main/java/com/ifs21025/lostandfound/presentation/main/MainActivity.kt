@@ -22,6 +22,7 @@ import com.ifs21025.lostandfound.presentation.ViewModelFactory
 import com.ifs21025.lostandfound.presentation.allreports.AllReportActivity
 import com.ifs21025.lostandfound.presentation.login.LoginActivity
 import com.ifs21025.lostandfound.presentation.lostandfound.LostFoundDetailActivity
+import com.ifs21025.lostandfound.presentation.lostandfound.LostFoundFavoriteActivity
 import com.ifs21025.lostandfound.presentation.lostandfound.LostFoundManageActivity
 import com.ifs21025.lostandfound.presentation.profile.ProfileActivity
 
@@ -92,6 +93,10 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
 
+                R.id.mainMenuMyFavorite -> {
+                    openFavoriteTodoActivity()
+                    true
+                }
                 else -> false
             }
         }
@@ -272,6 +277,14 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(
             this@MainActivity,
             AllReportActivity::class.java
+        )
+        launcher.launch(intent)
+    }
+
+    private fun openFavoriteTodoActivity() {
+        val intent = Intent(
+            this@MainActivity,
+            LostFoundFavoriteActivity::class.java
         )
         launcher.launch(intent)
     }

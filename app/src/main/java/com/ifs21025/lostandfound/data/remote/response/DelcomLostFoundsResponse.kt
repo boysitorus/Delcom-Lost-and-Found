@@ -17,7 +17,7 @@ data class DelcomLostFoundsResponse(
 data class LostFoundsItemResponse(
 
 	@field:SerializedName("cover")
-	val cover: String,
+	val cover: String?,
 
 	@field:SerializedName("updated_at")
 	val updatedAt: String,
