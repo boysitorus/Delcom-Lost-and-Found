@@ -8,6 +8,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
+import com.ifs21025.lostandfound.R
 import com.ifs21025.lostandfound.data.model.DelcomLostandFound
 import com.ifs21025.lostandfound.data.remote.MyResult
 import com.ifs21025.lostandfound.data.remote.response.LostFoundResponse
@@ -94,6 +96,18 @@ class LostFoundDetailActivity : AppCompatActivity() {
             tvLostFoundDetailDesc.text = lostFound.description
             tvLostFoundDetailStatus.text = "Status: ${lostFound.status}"
 
+            if(lostFound.cover != null){
+                ivLostFoundDetailCover.visibility = View.VISIBLE
+
+                Glide.with(this@LostFoundDetailActivity)
+                    .load(lostFound.cover)
+                    .placeholder(R.drawable.ic_image_24)
+                    .into(ivLostFoundDetailCover)
+
+            }else{
+                ivLostFoundDetailCover.visibility = View.GONE
+            }
+
             cbLostFoundDetailIsCompleted.isChecked = lostFound.isCompleted == 1
 
             cbLostFoundDetailIsCompleted.setOnCheckedChangeListener { _, isChecked ->
@@ -149,7 +163,7 @@ class LostFoundDetailActivity : AppCompatActivity() {
             ivLostFoundDetailActionDelete.setOnClickListener {
                 val builder = AlertDialog.Builder(this@LostFoundDetailActivity)
 
-                builder.setTitle("Konfirmasi Hapus Todo")
+                builder.setTitle("Konfirmasi Hapus LostFound")
                     .setMessage("Anda yakin ingin menghapus Item lost & found ini?")
 
                 builder.setPositiveButton("Ya") { _, _ ->

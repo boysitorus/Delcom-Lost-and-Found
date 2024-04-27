@@ -1,23 +1,35 @@
 package com.ifs21025.lostandfound.presentation.lostandfound
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.ifs21025.lostandfound.R
 import com.ifs21025.lostandfound.data.model.DelcomLostandFound
 import com.ifs21025.lostandfound.data.remote.MyResult
 import com.ifs21025.lostandfound.databinding.ActivityLostFoundManageBinding
 import com.ifs21025.lostandfound.helper.Utils.Companion.observeOnce
+import com.ifs21025.lostandfound.helper.getImageUri
+import com.ifs21025.lostandfound.helper.reduceFileImage
+import com.ifs21025.lostandfound.helper.uriToFile
 import com.ifs21025.lostandfound.presentation.ViewModelFactory
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 
 class LostFoundManageActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLostFoundManageBinding
+    private var currentImageUri: Uri? = null
     private val viewModel by viewModels<LostFoundViewModel> {
         ViewModelFactory.getInstance(this)
     }
@@ -83,7 +95,7 @@ class LostFoundManageActivity : AppCompatActivity() {
                 val description = etLostFoundManageDesc.text.toString()
                 var status = autoCompleteTextView.text.toString()
 
-                if (title.isEmpty() || description.isEmpty() || status == "" ) {
+                if (title.isEmpty() || description.isEmpty() || status == "") {
                     AlertDialog.Builder(this@LostFoundManageActivity).apply {
                         setTitle("Oh No!")
                         setMessage("Tidak boleh ada data yang kosong!")
@@ -96,6 +108,14 @@ class LostFoundManageActivity : AppCompatActivity() {
 
                 observePostLostFound(title, description, status)
             }
+
+            btnLostFoundManageCamera.setOnClickListener {
+                startCamera()
+            }
+
+            btnLostFoundManageGallery.setOnClickListener {
+                startGallery()
+            }
         }
     }
 
@@ -107,11 +127,15 @@ class LostFoundManageActivity : AppCompatActivity() {
                 }
 
                 is MyResult.Success -> {
-                    showLoading(false)
+                    if (currentImageUri != null) {
+                        observeAddCoverLostFound(result.data.lostFoundId)
+                    } else {
+                        showLoading(false)
 
-                    val resultIntent = Intent()
-                    setResult(RESULT_CODE, resultIntent)
-                    finishAfterTransition()
+                        val resultIntent = Intent()
+                        setResult(RESULT_CODE, resultIntent)
+                        finishAfterTransition()
+                    }
                 }
 
                 is MyResult.Error -> {
@@ -135,6 +159,13 @@ class LostFoundManageActivity : AppCompatActivity() {
             etLostFoundManageTitle.setText(lostFound.title)
             etLostFoundManageDesc.setText(lostFound.description)
 
+            if (lostFound.cover != null) {
+                Glide.with(this@LostFoundManageActivity)
+                    .load(lostFound.cover)
+                    .placeholder(R.drawable.ic_image_24)
+                    .into(ivLostFoundManageCover)
+            }
+
             btnLostFoundManageSave.setOnClickListener {
                 val title = etLostFoundManageTitle.text.toString()
                 val description = etLostFoundManageDesc.text.toString()
@@ -151,12 +182,62 @@ class LostFoundManageActivity : AppCompatActivity() {
                     return@setOnClickListener
                 }
 
-                observePutTodo(lostFound.id, title, description, status, lostFound.isCompleted)
+                observePutLostFound(lostFound.id, title, description, status, lostFound.isCompleted)
+            }
+
+            btnLostFoundManageCamera.setOnClickListener {
+                startCamera()
+            }
+
+            btnLostFoundManageGallery.setOnClickListener {
+                startGallery()
             }
         }
     }
 
-    private fun observePutTodo(
+    private fun startGallery() {
+        launcherGallery.launch(
+            PickVisualMediaRequest(
+                ActivityResultContracts.PickVisualMedia.ImageOnly
+            )
+        )
+    }
+
+    private val launcherGallery = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            currentImageUri = uri
+            showImage()
+        } else {
+            Toast.makeText(
+                applicationContext,
+                "Tidak ada media yang dipilih!",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun showImage() {
+        currentImageUri?.let {
+            binding.ivLostFoundManageCover.setImageURI(it)
+        }
+    }
+
+    private fun startCamera() {
+        currentImageUri = getImageUri(this)
+        launcherIntentCamera.launch(currentImageUri)
+    }
+
+    private val launcherIntentCamera = registerForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { isSuccess ->
+        if (isSuccess) {
+            showImage()
+        }
+    }
+
+    private fun observePutLostFound(
         lostFoundId: Int,
         title: String,
         description: String,
@@ -176,10 +257,14 @@ class LostFoundManageActivity : AppCompatActivity() {
                 }
 
                 is MyResult.Success -> {
-                    showLoading(false)
-                    val resultIntent = Intent()
-                    setResult(RESULT_CODE, resultIntent)
-                    finishAfterTransition()
+                    if (currentImageUri != null) {
+                        observeAddCoverLostFound(lostFoundId)
+                    } else {
+                        showLoading(false)
+                        val resultIntent = Intent()
+                        setResult(RESULT_CODE, resultIntent)
+                        finishAfterTransition()
+                    }
                 }
 
                 is MyResult.Error -> {
@@ -195,6 +280,59 @@ class LostFoundManageActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun observeAddCoverLostFound(
+        lostFoundId: Int,
+    ) {
+
+        val imageFile =
+            uriToFile(currentImageUri!!, this).reduceFileImage()
+        val requestImageFile =
+            imageFile.asRequestBody("image/jpeg".toMediaType())
+        val reqPhoto =
+            MultipartBody.Part.createFormData(
+                "cover",
+                imageFile.name,
+                requestImageFile
+            )
+
+        viewModel.addCoverLostFound(
+            lostFoundId,
+            reqPhoto
+        ).observeOnce { result ->
+            when (result) {
+                is MyResult.Loading -> {
+                    showLoading(true)
+                }
+
+                is MyResult.Success -> {
+                    showLoading(false)
+
+                    val resultIntent = Intent()
+                    setResult(RESULT_CODE, resultIntent)
+                    finishAfterTransition()
+                }
+
+                is MyResult.Error -> {
+                    showLoading(false)
+
+                    AlertDialog.Builder(this@LostFoundManageActivity).apply {
+                        setTitle("Oh No!")
+                        setMessage(result.error)
+                        setPositiveButton("Oke") { _, _ ->
+                            val resultIntent = Intent()
+                            setResult(RESULT_CODE, resultIntent)
+                            finishAfterTransition()
+                        }
+                        setCancelable(false)
+                        create()
+                        show()
+                    }
+                }
+            }
+        }
+    }
+
 
     private fun showLoading(isLoading: Boolean) {
         binding.pbLostFoundManage.visibility =

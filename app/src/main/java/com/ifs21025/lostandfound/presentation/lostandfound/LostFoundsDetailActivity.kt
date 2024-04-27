@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.ifs21025.lostandfound.R
 import com.ifs21025.lostandfound.data.local.entity.DelcomLostFoundEntity
 import com.ifs21025.lostandfound.data.remote.MyResult
@@ -99,7 +100,28 @@ class LostFoundsDetailActivity : AppCompatActivity() {
 
             cbLostFoundDetailIsCompleted.isChecked = lostFound.isCompleted == 1
 
+            if(lostFound.cover != null){
+                ivLostFoundDetailCover.visibility = View.VISIBLE
+
+                Glide.with(this@LostFoundsDetailActivity)
+                    .load(lostFound.cover)
+                    .placeholder(R.drawable.ic_image_24)
+                    .into(ivLostFoundDetailCover)
+
+            }else{
+                ivLostFoundDetailCover.visibility = View.GONE
+            }
+
             cbLostFoundDetailIsCompleted.isEnabled = false;
+
+            viewModel.getLocalLostFound(lostFound.id).observeOnce {
+                if(it != null){
+                    delcomLostFound = it
+                    setFavorite(true)
+                }else{
+                    setFavorite(false)
+                }
+            }
 
             ivLostFoundDetailActionFavorite.setOnClickListener {
                 if(isFavorite){
