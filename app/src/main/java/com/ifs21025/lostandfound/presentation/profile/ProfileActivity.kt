@@ -39,6 +39,10 @@ class ProfileActivity : AppCompatActivity() {
             ivProfileBack.setOnClickListener {
                 finish()
             }
+            btnUpdateProfile.setOnClickListener{
+                val intent = Intent(applicationContext, ProfileManageActivity::class.java )
+                startActivity(intent)
+            }
         }
     }
 
