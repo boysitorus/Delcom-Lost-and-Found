@@ -83,7 +83,7 @@
         android:layout_marginTop="16dp"
         android:text="Belum terdapat data lost and found!"
         android:textColor="#E6180D"
-        android:textSize="16sp"
+        style="@style/Text.P5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appbarLayoutMain" />

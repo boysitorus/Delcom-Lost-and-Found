@@ -100,4 +100,9 @@ class ProfileActivity : AppCompatActivity() {
         startActivity(intent)
         finish()
     }
+
+    override fun onResume() {
+        super.onResume()
+        setupView()
+    }
 }

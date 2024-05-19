@@ -16,8 +16,10 @@ import com.ifs21025.lostandfound.data.remote.response.LostFoundsItemResponse
 import com.ifs21025.lostandfound.databinding.ActivityLostFoundFavoriteBinding
 import com.ifs21025.lostandfound.helper.Utils.Companion.entitiesToResponses
 import com.ifs21025.lostandfound.presentation.ViewModelFactory
+import com.ifs21025.lostandfound.presentation.allreports.AllReportActivity
 import com.ifs21025.lostandfound.presentation.login.LoginActivity
 import com.ifs21025.lostandfound.presentation.main.MainActivity
+import com.ifs21025.lostandfound.presentation.main.MainViewModel
 import com.ifs21025.lostandfound.presentation.profile.ProfileActivity
 
 class LostFoundFavoriteActivity : AppCompatActivity() {
@@ -62,6 +64,40 @@ class LostFoundFavoriteActivity : AppCompatActivity() {
             resultIntent.putExtra(LostFoundDetailActivity.KEY_IS_CHANGED, true)
             setResult(LostFoundDetailActivity.RESULT_CODE, resultIntent)
             finishAfterTransition()
+        }
+
+        binding.appbarMain.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.mainMenuProfile -> {
+                    openProfileActivity()
+                    true
+                }
+
+                R.id.mainMenuLogout -> {
+                    val vmMain by viewModels<MainViewModel> {
+                        ViewModelFactory.getInstance(this)
+                    }
+                    vmMain.logout()
+                    openLoginActivity()
+                    true
+                }
+
+                R.id.mainMenuAllReport -> {
+                    openAllLostFoundActivity()
+                    true
+                }
+
+                R.id.mainMenuMyReport -> {
+                    openMainActivity()
+                    true
+                }
+
+                else -> false
+            }
+        }
+
+        binding.fabMainAddLostFound.setOnClickListener {
+            openAddLostFoundActivity()
         }
     }
 
@@ -174,5 +210,15 @@ class LostFoundFavoriteActivity : AppCompatActivity() {
             MainActivity::class.java
         )
         launcher.launch(intent)
+        finish()
+    }
+
+    private fun openAllLostFoundActivity(){
+        val intent = Intent(
+            this@LostFoundFavoriteActivity,
+            AllReportActivity::class.java
+        )
+        launcher.launch(intent)
+        finish()
     }
 }

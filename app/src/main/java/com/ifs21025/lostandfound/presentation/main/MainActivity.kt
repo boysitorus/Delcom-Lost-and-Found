@@ -271,6 +271,7 @@ class MainActivity : AppCompatActivity() {
         )
         intent.putExtra(LostFoundManageActivity.KEY_IS_ADD, true)
         launcher.launch(intent)
+
     }
 
     private fun openAllLostFoundActivity(){
@@ -279,6 +280,7 @@ class MainActivity : AppCompatActivity() {
             AllReportActivity::class.java
         )
         launcher.launch(intent)
+        finish()
     }
 
     private fun openFavoriteTodoActivity() {
@@ -287,5 +289,6 @@ class MainActivity : AppCompatActivity() {
             LostFoundFavoriteActivity::class.java
         )
         launcher.launch(intent)
+        finish()
     }
 } 

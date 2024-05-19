@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:text="Judul lost and found"
-            android:textSize="16sp"
+            style="@style/Text.P5"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tvStatusItem"
             app:layout_constraintStart_toEndOf="@+id/cbItemLostFoundIsCompleted"
@@ -39,8 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:text="Lost"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            style="@style/TextBold.H4"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/ivItemLostFoundDetail"
             app:layout_constraintTop_toTopOf="parent" />
